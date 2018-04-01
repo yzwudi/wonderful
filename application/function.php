@@ -16,6 +16,7 @@ function jdump($arr)
     echo json_encode($arr, JSON_UNESCAPED_UNICODE);
 }
 
+
 function croot3($num)
 {
     $guess=$num/3;
