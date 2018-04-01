@@ -23,7 +23,7 @@ if (version_compare(PHP_VERSION, '5.5', '<')) {
 define('APP_PATH', __DIR__ . '/../application/');
 
 // 检查是否安装
-if(!is_file('../data/install.lock')){
+if(!is_file(dirname(APP_PATH). '/data/install.lock')){
     define('BIND_MODULE', 'install');
 }
 
@@ -35,7 +35,7 @@ define('ENTRANCE', 'admin');
 // | 如果需要开启路由功能，请注释下面三句
 // +----------------------------------------------------------------------
 // 加载框架基础文件
-require '../thinkphp/base.php';
+require dirname(APP_PATH). '/thinkphp/base.php';
 
 // 关闭路由
 \think\App::route(false);
@@ -48,4 +48,4 @@ require '../thinkphp/base.php';
 // | 如果需要开启路由，请取消以下注释
 // +----------------------------------------------------------------------
 // 加载框架引导文件
-// require './thinkphp/start.php';
+// require '../thinkphp/start.php';
