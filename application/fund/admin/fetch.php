@@ -106,4 +106,120 @@ class Fetch extends Common
             $result = $mod_fund_index->add($value);
         }
     }
+
+    public function history()
+    {
+        $result = [];
+        $start_date = '2016-01-04';
+        $end_date = date('Y-m-d');
+
+        $mod_fund_index = new FundIndexInfo();
+        $result = $mod_fund_index->getData(['date', 'index', 'macd', 'turn_volume'], ['code'=>self::HS300, 'status' => 1], ['date' => 'asc']);
+        $result = array_column($result, null, 'date');
+        $account = array_column($result, 'turn_volume');
+        rsort($account);
+        $sell_amount = ($account[floor(count($account)/4)]);
+        while (!isset($result[$start_date])) {
+            $start_date = date('Y-m-d', strtotime(' +1 day ', strtotime($start_date)));
+        }
+
+        while (!isset($result[$end_date])) {
+            $end_date = date('Y-m-d', strtotime(' -1 day ', strtotime($end_date)));
+        }
+
+        $start_index = $result[$start_date]['index'];
+        $end_index   = $result[$end_date]['index'];
+
+
+        $money = 10000;
+        $profit = 0;
+        $have = false;
+        $up_days = 0;
+        $down_days = 0;
+        $last_macd  = false;
+        $last_index = false;
+        $last_account = false;
+        $buy_index = 0;
+        $buy_date = 0;
+        $total_have_days = 0;
+
+        $can_buy = false;
+        $can_sell = false;
+
+        foreach ($result as $date => $value) {
+            $macd  = $value['macd'];
+            $index = $value['index'];
+            $account = $value['turn_volume'];
+
+            if ($last_macd === false) {
+                $last_macd = $macd;
+                $last_index = $index;
+            }
+
+            if ($can_buy) {
+                $have = true;
+                $buy_index = $index;
+                $profit -= $money / 1000;
+                $buy_date = $date;
+                echo 'buy:'. $date. ' '. $index, '<br>';
+            }
+
+            if ($can_sell) {
+                $have = false;
+                $ratio = 1 + ($index - $buy_index) / $buy_index;
+                $cur_money = $money * $ratio;
+                $profit += ($cur_money - $money);
+                $have_days = (strtotime($date) - strtotime($buy_date)) / 3600 / 24;
+                $total_have_days += $have_days + 2;
+                if ($have_days > 7) {
+                    $profit -= $cur_money / 2000;
+                } else {
+                    $profit -= $cur_money / 100 * 1.5;
+                }
+                $profit -= $cur_money * 6 / 1000 * $have_days / 365;
+                echo 'sell:'. $date. ' '. $index. ' '. ($have_days). ' '. ($cur_money - $money) , '<br>';
+            }
+
+            if ($macd > $last_macd) {
+                $up_days ++;
+                $down_days = 0;
+            } else {
+                $down_days ++;
+                $up_days = 0;
+            }
+
+            if ($last_macd < -20 and !$have and $up_days == 1) {
+                $can_buy = true;
+            } else {
+                $can_buy = false;
+            }
+
+            if ($last_macd > 0 and $have and $down_days == 1 and $last_account > $sell_amount) {
+                $can_sell = true;
+            } else {
+                $can_sell = false;
+            }
+
+
+            $last_macd = $macd;
+            $last_index = $index;
+            $last_account = $account;
+        }
+
+        if ($have) {
+            $total_have_days += (strtotime($end_date) - strtotime($buy_date)) / 3600 / 24;
+        }
+
+        $empty_days = (strtotime($end_date) - strtotime($start_date)) / 3600 / 24 - $total_have_days;
+        echo $empty_days, '<br>';
+        $empty_profit = $empty_days * $money / 25 / 365;
+        echo $profit + $empty_profit, '<br>';
+//echo $total_have_days, '<br>';
+//echo $empty_profit / $money / (($empty_days) / 365), '<br>';
+//echo $profit / $money / (($total_have_days) / 365), '<br>';
+        echo $money * (($end_index - $start_index) / $start_index), '<br>';
+        echo ($profit + $empty_profit) / $money / (($total_have_days+$empty_days) / 365), '<br>';
+        echo $money * (($end_index - $start_index) / $start_index) / $money / (($total_have_days+$empty_days) / 365), '<br>';
+
+    }
 }
