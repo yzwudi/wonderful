@@ -23,7 +23,7 @@ class Index extends Admin
     {
         $order = $this->getOrder();
         $map = $this->getMap();
-        $data_list = Db::name('fund_test')->where($map)->order($order)->select();
+        $data_list = Db::name('fund_index_info')->where($map)->order($order)->select();
 
         foreach ($data_list as &$value) {
             $value['icon'] = '';
