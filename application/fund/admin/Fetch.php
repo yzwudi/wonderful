@@ -109,7 +109,6 @@ class Fetch extends Common
 
     public function history()
     {
-        $result = [];
         $start_date = '2016-01-04';
         $end_date = date('Y-m-d');
 

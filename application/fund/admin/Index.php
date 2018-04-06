@@ -21,42 +21,22 @@ class Index extends Admin
     // 文章列表
     public function index()
     {
-        $order = $this->getOrder();
-        $map = $this->getMap();
-        $data_list = Db::name('fund_index_info')->where($map)->order($order)->select();
+        // 读取用户数据
+        $data_list = Db::name('fund_index_info')->order(['date' => 'desc'])->paginate();
 
-        foreach ($data_list as &$value) {
-            $value['icon'] = '';
-        }
-        $btn_access = [
-            'title' => '查看详情',
-            'icon'  => 'fa fa-fw fa-key',
-            'href'  => url('detail', ['id' => '__id__'])
-        ];
-
-
-        // 使用ZBuilder快速创建数据表格
-        return ZBuilder::make('table', 'danger')
-            ->addTimeFilter('create_time') // 添加时间段筛选
-            ->addOrder('text,username') // 添加排序
-            ->addFilter('username') // 添加筛选
-            ->hideCheckbox()
-            ->setPageTitle('基金列表')
+// 使用ZBuilder构建数据表格
+        return ZBuilder::make('table')
+//            ->addOrder('id,username') // 添加排序
+//            ->addFilter('id,username') // 添加筛选
             ->addColumns([
                 ['__INDEX__', 'ID'],
             ])
-            ->addColumn('username', '用户名')
-            ->addColumn('status', '状态', 'status')
-            ->addColumn('text', '内容', 'text.edit')
-            ->addColumn('icon', '图标', 'icon',  'fa fa-fw fa-star-o')
+            ->addColumn('index_name', '指数名称')
+            ->addColumn('code', 'code')
+            ->addColumn('date', '日期')
+//            ->addColumn('mobile', '手机号')
             ->addColumn('create_time', '创建时间')
-            ->addColumn('right_button', '操作', 'btn')
-            ->addRightButton('edit', [], true)
-            ->addRightButton('custom', $btn_access, true) // 添加授权按钮
-            ->addRightButton('disable')
-            ->setPageTips('这是页面提示信息')
-            ->setRowList($data_list)
-            ->setTableName('fund_test')
+            ->setRowList($data_list) // 设置表格数据
             ->fetch();
     }
 
