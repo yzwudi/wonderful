@@ -34,6 +34,12 @@ defined('ENV_PREFIX') or define('ENV_PREFIX', 'PHP_'); // 环境变量的配置�
 define('IS_CLI', PHP_SAPI == 'cli' ? true : false);
 define('IS_WIN', strpos(PHP_OS, 'WIN') !== false);
 
+$inner_ips = ['111.201.34.217'];
+$remote_ip = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : null;
+
+define('IS_INNER_IP', in_array($remote_ip, $inner_ips) ? true : false);
+
+
 // 载入Loader类
 require CORE_PATH . 'Loader.php';
 

@@ -41,7 +41,7 @@ class Fetch extends Common
     public function __construct(Request $request = null)
     {
         parent::__construct($request);
-        if (!IS_CLI and false) {
+        if (!IS_CLI and !IS_INNER_IP) {
              exit;
         }
     }
