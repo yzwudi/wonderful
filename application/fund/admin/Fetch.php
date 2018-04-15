@@ -160,7 +160,7 @@ class Fetch extends Common
                 $buy_index = $index;
                 $profit -= $money / 1000;
                 $buy_date = $date;
-                echo 'buy:'. $date. ' '. $index, '<br>';
+                echo 'buy:'. $date. ' '. $index, PHP_EOL;
             }
 
             if ($can_sell) {
@@ -176,7 +176,7 @@ class Fetch extends Common
                     $profit -= $cur_money / 100 * 1.5;
                 }
                 $profit -= $cur_money * 6 / 1000 * $have_days / 365;
-                echo 'sell:'. $date. ' '. $index. ' '. ($have_days). ' '. ($cur_money - $money) , '<br>';
+                echo 'sell:'. $date. ' '. $index. ' '. ($have_days). ' '. ($cur_money - $money) , PHP_EOL;
             }
 
             if ($macd > $last_macd) {
@@ -210,15 +210,15 @@ class Fetch extends Common
         }
 
         $empty_days = (strtotime($end_date) - strtotime($start_date)) / 3600 / 24 - $total_have_days;
-        echo $empty_days, '<br>';
+        echo $empty_days, PHP_EOL;
         $empty_profit = $empty_days * $money / 25 / 365;
-        echo $profit + $empty_profit, '<br>';
-//echo $total_have_days, '<br>';
-//echo $empty_profit / $money / (($empty_days) / 365), '<br>';
-//echo $profit / $money / (($total_have_days) / 365), '<br>';
-        echo $money * (($end_index - $start_index) / $start_index), '<br>';
-        echo ($profit + $empty_profit) / $money / (($total_have_days+$empty_days) / 365), '<br>';
-        echo $money * (($end_index - $start_index) / $start_index) / $money / (($total_have_days+$empty_days) / 365), '<br>';
+        echo $profit + $empty_profit, PHP_EOL;
+//echo $total_have_days, PHP_EOL;
+//echo $empty_profit / $money / (($empty_days) / 365), PHP_EOL;
+//echo $profit / $money / (($total_have_days) / 365), PHP_EOL;
+        echo $money * (($end_index - $start_index) / $start_index), PHP_EOL;
+        echo ($profit + $empty_profit) / $money / (($total_have_days+$empty_days) / 365), PHP_EOL;
+        echo $money * (($end_index - $start_index) / $start_index) / $money / (($total_have_days+$empty_days) / 365), PHP_EOL;
 
     }
 }
