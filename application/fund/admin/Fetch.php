@@ -109,11 +109,11 @@ class Fetch extends Common
 
     public function history()
     {
-        $start_date = '2016-01-04';
+        $start_date = '2016-05-04';
         $end_date = date('Y-m-d');
 
         $mod_fund_index = new FundIndexInfo();
-        $result = $mod_fund_index->getData(['date', 'index', 'macd', 'turn_volume'], ['code'=>self::HS300, 'status' => 1], ['date' => 'asc']);
+        $result = $mod_fund_index->getData(['date', 'index', 'macd', 'turn_volume'], ['code'=>self::SZ50, 'status' => 1], ['date' => 'asc']);
         $result = array_column($result, null, 'date');
         $account = array_column($result, 'turn_volume');
         rsort($account);
@@ -207,18 +207,29 @@ class Fetch extends Common
 
         if ($have) {
             $total_have_days += (strtotime($end_date) - strtotime($buy_date)) / 3600 / 24;
+            $ratio = 1 + ($index - $buy_index) / $buy_index;
+            $cur_money = $money * $ratio;
+            $profit += ($cur_money - $money);
+            $have_days = (strtotime($date) - strtotime($buy_date)) / 3600 / 24;
+            if ($have_days > 7) {
+                $profit -= $cur_money / 2000;
+            } else {
+                $profit -= $cur_money / 100 * 1.5;
+            }
+            $profit -= $cur_money * 6 / 1000 * $have_days / 365;
+            echo '当前指数:'. $last_index, PHP_EOL;
         }
 
         $empty_days = (strtotime($end_date) - strtotime($start_date)) / 3600 / 24 - $total_have_days;
-        echo $empty_days, PHP_EOL;
+        echo '空闲天数:'. $empty_days, PHP_EOL;
+        echo '持有天数:'.$total_have_days, PHP_EOL;
         $empty_profit = $empty_days * $money / 25 / 365;
-        echo $profit + $empty_profit, PHP_EOL;
-//echo $total_have_days, PHP_EOL;
-//echo $empty_profit / $money / (($empty_days) / 365), PHP_EOL;
-//echo $profit / $money / (($total_have_days) / 365), PHP_EOL;
-        echo $money * (($end_index - $start_index) / $start_index), PHP_EOL;
-        echo ($profit + $empty_profit) / $money / (($total_have_days+$empty_days) / 365), PHP_EOL;
-        echo $money * (($end_index - $start_index) / $start_index) / $money / (($total_have_days+$empty_days) / 365), PHP_EOL;
+        echo '合计利润:'. ($profit + $empty_profit), PHP_EOL;
+        echo '空闲期间年化:'. ($empty_profit / $money / (($empty_days) / 365)), PHP_EOL;
+        echo '持有期间年化:'. ($profit / $money / (($total_have_days) / 365)), PHP_EOL;
+        echo '单次购买利润:'. ($money * (($end_index - $start_index) / $start_index)), PHP_EOL;
+        echo '年化:'. (($profit + $empty_profit) / $money / (($total_have_days+$empty_days) / 365)), PHP_EOL;
+        echo '单次购买年化:'. ($money * (($end_index - $start_index) / $start_index) / $money / (($total_have_days+$empty_days) / 365)), PHP_EOL;
 
     }
 }
