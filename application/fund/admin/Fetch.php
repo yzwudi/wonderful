@@ -59,7 +59,7 @@ class Fetch extends Common
             $return = $this->formatCurlReturn($code, $name, $index_info, $macd_info);
         }
 
-        echo 'success';
+        echo 'success', PHP_EOL;
     }
 
     private function formatCurlReturn($code, $index_name, $data_index, $data_macd)
